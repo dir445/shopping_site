@@ -11,5 +11,11 @@ function connect_shop_database() {
 
 function execute_query($dbh, $sql , $params = []) {
     $stmt = $dbh->prepare($sql);
-    return $stmt->execute(params);
+    return $stmt->execute($params);
+}
+
+function fetch_all_query($dbh, $sql, $params = []) {
+    $stmt = $dbh->prepare($sql);
+    $stmt->execute($params);
+    return $stmt->fetchAll();
 }
