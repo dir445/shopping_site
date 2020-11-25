@@ -48,6 +48,12 @@ class StaffTable {
     }
 
     public function get($code) {
+        $sql = 'SELECT name,password FROM mst_staff WHERE code=?';
+        $param = [$code];
+        return fetch_query($this->$dbh,$sql,$param);
+    }
+
+    public function getName($code) {
         $sql = 'SELECT name FROM mst_staff WHERE code=?';
         $param = [$code];
         return fetch_query($this->$dbh,$sql,$param);
@@ -61,12 +67,6 @@ class StaffTable {
     public function update($code,$name,$pass) {
         $sql = 'UPDATE mst_staff SET name=?,password=? WHERE code=?';
         $params = [$name,$pass,$code];
-        return execute_query($this->$dbh,$sql,$params);
-    }
-
-    public function update($code,$name) {
-        $sql = 'UPDATE mst_staff SET name=? WHERE code=?';
-        $params = [$name,$code];
         return execute_query($this->$dbh,$sql,$params);
     }
 }

@@ -1,8 +1,3 @@
-<?php
-require_once('../common/common.php');
-check_staff_login(TRUE);
-?>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -16,38 +11,37 @@ check_staff_login(TRUE);
         print '変更する項目がチェックされていません<br />';
     }
 
-    if($staff_name == '') {
+    if($name == '') {
         print 'スタッフ名が入力されていません。<br />';
     } else {
         print 'スタッフ名：';
-        print $staff_name;
+        print $name;
         print '<br />';
-    }
+    }  
 
     if($changePass) {
-        if($staff_pass=='') {
+        if($pass=='') {
             print 'パスワードが入力されていません。<br />';
-        }
-    
-        if($staff_pass != $staff_pass2) {
+        }    
+        if($pass != $pass2) {
             print 'パスワードが一致しません。<br />';
         }
     }
 
-
-    if($staff_name=='' || $staff_pass=='' || $staff_pass!=$staff_pass2) {
+    if((!$changeName && !$changePass) || 
+        ($changeName && $name=='') ||
+        ($changePass && ($pass=='' || $pass!=$pass2))) {
         print '<form>';
         print '<input type="button" onclick="history.back()" value="戻る">';
         print '</form>';
     } else {
-        $staff_pass = md5($staff_pass);
-        print '<form method="post" action="staff_edit_done.php">';
-        print '<input type="hidden" name="code" value="'.$staf_code.'">';
-        print '<input type="hidden" name="name" value="'.$staff_name.'">';
-        print '<input type="hidden" name="pass" value="'.$staff_pass.'">';
+        print '<form method="post">';
+        print '<input type="hidden" name="code" value="'.$code.'">';
+        print '<input type="hidden" name="name" value="'.$name.'">';
+        print '<input type="hidden" name="pass" value="'.$pass_md5.'">';
         print '<br />';
         print '<input type="button" onclick="history.back()" value="戻る">';
-        print '<input type="submit" value="OK">';
+        print '<input type="submit" name="edit_done" value="OK">';
         print '</form>';
     }
     ?>

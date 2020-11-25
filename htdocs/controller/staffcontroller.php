@@ -24,7 +24,7 @@ class StaffController {
             $this->edit_form();
         } elseif(isset($_POST['edit_check'])) {
             $this->edit_check();
-        } elseif(isset($_POST['edit_check'])) {
+        } elseif(isset($_POST['edit_done'])) {
             $this->edit_done();
         } else {
             $this->list();
@@ -33,20 +33,21 @@ class StaffController {
 
     function add_check() {
         $post = sanitize($_POST);
-        $staff_name = $post['name'];
-        $staff_pass = $post['pass'];
-        $staff_pass2 = $post['pass2'];
+        $name = $post['name'];
+        $pass = $post['pass'];
+        $pass2 = $post['pass2'];
+        $pass_md5 = md5($pass);
         // $csfr_token = set_csfr_token();
         include('view/staff_add_check.php');
     }
 
     function add() {
         $post = sanitize($_POST);
-        $staff_name = $post['name'];
-        $staff_pass = $post['pass'];
-
+        $name = $post['name'];
+        $pass = $post['pass'];
+        
         $staffTable = new StaffTable();
-        $staffTable->insert($staff_name,$staff_pass);
+        $staffTable->insert($name,$pass);
         include('view/staff_add_done.php');
     }
 
@@ -73,7 +74,7 @@ class StaffController {
         $code = $_POST['staffcode'];
 
         $staffTable = new StaffTable();
-        $result = $staffTable->get($code);
+        $result = $staffTable->getName($code);
         $name = $result['name'];
         // $csfr_token = set_csfr_token();
         include('view/staff_delete.php');       
@@ -98,7 +99,7 @@ class StaffController {
         $code = $_POST['staffcode'];
 
         $staffTable = new StaffTable();
-        $result = $staffTable->get($code);
+        $result = $staffTable->getName($code);
         $name = $result['name'];
 
         include('view/staff_edit_form.php');
@@ -106,23 +107,36 @@ class StaffController {
 
     function edit_check() {
         $post = sanitize($_POST);
-        $staf_code = $post['code'];
-
+        $code = $post['code'];
+        $name = $post['name'];
+        $pass = $post['pass'];
+        $pass2 = $post['pass2'];
+        $pass_md5 = md5($pass);
         $changeName = isset($post['changename']);
+        $changePass = isset($post['changepass']);
 
-        if($changeName) {
-            $staff_name = $post['name'];
-        } else {
+        if(!$changeName || !$changePass) {
             $staffTable = new StaffTable();
             $result = $staffTable->get($code);
-            $staff_name = $result['name'];
-        }
-
-        $changePass = isset($post['changepass']);
-        $staff_pass = $post['pass'];
-        $staff_pass2 = $post['pass2'];
-
+            if(!$changeName) {
+                $name = $result['name'];       
+            }
+            if(!$changePass) {
+                $pass_md5 = $result['password'];
+            }
+        } 
         include('view/staff_edit_check.php');
+    }
+
+    function edit_done() {        
+        $post = sanitize($_POST);
+        $code = $post['code'];
+        $name = $post['name'];
+        $pass = $post['pass'];
+
+        $staffTable = new StaffTable();
+        $success = $staffTable->update($code,$name,$pass);
+        include('view/staff_edit_done.php'); 
     }
 
     function list() {

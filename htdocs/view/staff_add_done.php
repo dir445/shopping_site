@@ -6,7 +6,7 @@
 </head>
 <body>
     <?php
-    print $staff_name;
+    print $name;
     print 'さんを追加しました。<br />';
     ?>
     <a href="index.php">戻る</a>
