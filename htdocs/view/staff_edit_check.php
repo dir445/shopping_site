@@ -11,13 +11,13 @@
         print '変更する項目がチェックされていません<br />';
     }
 
-    if($name == '') {
-        print 'スタッフ名が入力されていません。<br />';
-    } else {
+    if($name!='') {
         print 'スタッフ名：';
         print $name;
         print '<br />';
-    }  
+    } elseif($changeName) {
+        print 'スタッフ名が入力されていません。<br />';
+    }
 
     if($changePass) {
         if($pass=='') {

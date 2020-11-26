@@ -6,14 +6,14 @@
 </head>
 <body>
     スタッフ修正<br />
+    変更する項目をチェックしてください。<br />
     <br />
     スタッフコード<br />
     <?php print $code; ?>
     <br />
-    変更する項目をチェックしてください。<br />
     <br />
     <form method="post">
-        <input type="hidden" name="code" value="<?php print $staff_code; ?>">
+        <input type="hidden" name="code" value="<?php print $code; ?>">
         スタッフ名<br />
         <input type="text" name="name" style="width:200px" value="<?php print $name;?>">
         <input type="checkbox" name="changename" value="1" checked><br />
