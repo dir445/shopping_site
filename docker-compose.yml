@@ -27,7 +27,9 @@ services:
   php-apache:
     build: ./php
     volumes:
-      - ./htdocs:/var/www/html
+      #- ./htdocs:/var/www/html
+      - ./application/web:/var/www/html
+      - ./application:/var/www
     restart: always
     ports:
       - "80:80"
