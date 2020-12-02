@@ -5,14 +5,15 @@ class DbManager {
     protected $repository_connection_map = [];
     protected $repositorys = [];
 
-    public function connenct($name,$params) {
+    public function connect($name,$params) {
+        print 'a';
         $params = array_merge([
             'dsn'       => null,
             'user'      => '',
             'password'  => '',
             'options'   => []
         ],$params);
-
+        
         $con = new PDO(
             $params['dsn'],
             $params['user'],
@@ -21,7 +22,7 @@ class DbManager {
         
         $con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        $this->$connections['name'] = '$con';
+        $this->connections['name'] = '$con';
     }
 
     public function getConnection($name = null) {

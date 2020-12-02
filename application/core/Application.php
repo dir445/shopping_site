@@ -3,7 +3,7 @@
 abstract class Application {
     protected $debug =  false;
     protected $request;
-    protected $responce;
+    protected $response;
     protected $session;
     protected $db_manager;
     protected $login_action = [];
@@ -16,21 +16,23 @@ abstract class Application {
 
     protected function setDebugMode($debug) {
         if($debug) {
-            $this->$debug = true;
+            $this->debug = true;
             ini_set('display_errors', 1);
             error_reporting(-1);
         } else {
-            $this->$debug = false;
+            $this->debug = false;
             ini_set('display_errors', 0);
         }
     }
 
     protected function initialize() {
-        $this->$request = new Request();
-        $this->$responce = new Responce();
-        $this->$session = new Session();
-        $this->$db_manager = new DbManager();
-        $this->$router = new Router($this->registerRoutes());
+        $this->request = new Request();
+        $this->response = new Response();
+
+        $this->session = new Session();
+        
+        $this->db_manager = new DbManager();
+        $this->router = new Router($this->registerRoutes());
     }
 
     protected function configure(){
@@ -49,7 +51,7 @@ abstract class Application {
     }
 
     public function getResponse() {
-        return $this->$responce;
+        return $this->$response;
     }
 
     public function getSession() {
@@ -106,7 +108,7 @@ abstract class Application {
 
         $content = $controller->run($action,$params);
 
-        $this->$responce->setContent($content);
+        $this->$response->setContent($content);
     }
 
     protected function findController($controller_class) {
@@ -126,11 +128,11 @@ abstract class Application {
     }
 
     protected function render404Page($e) {
-        $this->$responce->setStatusCode(404,'Not Found');
+        $this->$response->setStatusCode(404,'Not Found');
         $message = $this->isDebugMode() ? $e->getMessage() : 'Page not found.';
         $message = htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
 
-        $this->$responce->setContent(<<<EOF
+        $this->$response->setContent(<<<EOF
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitonal//EN"
  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
