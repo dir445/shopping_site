@@ -3,14 +3,14 @@
 class Router {
     protected $routes;
 
-    public function __construct($definitiions) {
-        $this->$routes = $this->compileRoutes($definitions);
+    public function __construct($definitions) {
+        $this->routes = $this->compileRoutes($definitions);
     }
 
     public function compileRoutes($definitions) {
         $routes = [];
 
-        foreach($definitiions as $url => $params) {
+        foreach($definitions as $url => $params) {
             $tokens = explode('/', ltrim($url,'/'));
             foreach($tokens as $i => $token) {
                 if(0 === strpos($token, ':')) {

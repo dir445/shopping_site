@@ -43,23 +43,23 @@ abstract class Application {
     abstract protected function registerRoutes();
 
     public function isDebugMode() {
-        return $this->$debug;
+        return $this->debug;
     }
 
     public function getRequest() {
-        return $this->$request;
+        return $this->request;
     }
 
     public function getResponse() {
-        return $this->$response;
+        return $this->response;
     }
 
     public function getSession() {
-        return $this->$session;
+        return $this->session;
     }
 
     public function getDbManager() {
-        return $this->$db_manager;
+        return $this->db_manager;
     }
 
     public function getControllerDir() {
@@ -80,9 +80,9 @@ abstract class Application {
 
     public function run() {
         try {
-            $params = $this->$router->resolve($this->$request->getPathInfo());
+            $params = $this->router->resolve($this->request->getPathInfo());
             if($params === false) {
-                throw new HttpNotFoundException('No route found for ' . $this->$request->getPathInfo());
+                throw new HttpNotFoundException('No route found for ' . $this->request->getPathInfo());
             }
     
             $controller = $params['controller'];
@@ -92,10 +92,10 @@ abstract class Application {
         } catch (HttpNotFoundException $e) {
             $this->render404Page($e);
         } catch (UnauthorizedActionException $e) {
-            list($controller, $action) = $this->$login_action;
+            list($controller, $action) = $this->login_action;
             $this->runAction($controller, $action);
         }
-        $this->$request->send();
+        $this->response->send();
     }
 
     public function runAction($controller_name,$action,$params = []) {
@@ -108,7 +108,7 @@ abstract class Application {
 
         $content = $controller->run($action,$params);
 
-        $this->$response->setContent($content);
+        $this->response->setContent($content);
     }
 
     protected function findController($controller_class) {
@@ -128,11 +128,11 @@ abstract class Application {
     }
 
     protected function render404Page($e) {
-        $this->$response->setStatusCode(404,'Not Found');
+        $this->response->setStatusCode(404,'Not Found');
         $message = $this->isDebugMode() ? $e->getMessage() : 'Page not found.';
         $message = htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
 
-        $this->$response->setContent(<<<EOF
+        $this->response->setContent(<<<EOF
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitonal//EN"
  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -144,7 +144,6 @@ abstract class Application {
         {$message}
 </body>
 </html>
-EOF
-        );
+EOF);
     }
 }

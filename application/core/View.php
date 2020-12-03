@@ -6,18 +6,18 @@ class View {
     protected $layout_variables = [];
 
     public function __construct($base_dir,$defaults) {
-        $this->$base_dir = $base_dir;
-        $this->$defaults = $defaults;
+        $this->base_dir = $base_dir;
+        $this->defaults = $defaults;
     }
 
     public function setLayoutVar($name,$value){
-        $this->$layout_variables[$name] = $value;
+        $this->layout_variables[$name] = $value;
     }
 
     public function render($_path, $_variables = [], $_layout = false) {
-        $_file = $this->$base_dir . '/' . $_path . '.php';
+        $_file = $this->base_dir . '/' . $_path . '.php';
 
-        extract(array_merge($this->$defaults, $_variables));
+        extract(array_merge($this->defaults, $_variables));
 
         ob_start();
         ob_implicit_flush(0);
@@ -28,7 +28,7 @@ class View {
 
         if($_layout) {
             $content = $this->render($_layout,
-                                     array_merge($this->$layout_variables,
+                                     array_merge($this->layout_variables,
                                                  ['_content' => $content]));
         }
 

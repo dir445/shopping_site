@@ -2,8 +2,7 @@
 
 class ShopApplication extends Application {
 
-    protected function configure(){
-        
+    function configure(){        
         $this->db_manager->connect('master', [
             'dsn'      => 'mysql:dbname=shop;host=mysql;charset=utf8',
             'user'     => 'root',
@@ -19,6 +18,8 @@ class ShopApplication extends Application {
     function registerRoutes() {
         return [
                 '/'
+                => ['controller' => 'staff', 'action' => 'list'],
+                '/staff'
                 => ['controller' => 'staff', 'action' => 'list']
         ];
     }

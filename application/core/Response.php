@@ -7,9 +7,9 @@ class Response {
     protected $http_headers = [];
 
     public function send() {
-        header('HTTP/1.1' . $this->$status_code . ' ' .$this->$status_text);
+        header('HTTP/1.1' . $this->status_code . ' ' .$this->status_text);
 
-        foreach($this->$http_headers as $name => $value) {
+        foreach($this->http_headers as $name => $value) {
             header($name. ': ' .$value);
         }
 
@@ -21,11 +21,11 @@ class Response {
     }
 
     public function setStatusCode($status_code,$status_text) {
-        $this->$status_code = $status_code;
-        $this->$status_text = $status_text;
+        $this->status_code = $status_code;
+        $this->status_text = $status_text;
     }
 
     public function setHttpHeader($name,$value) {
-        $this->$http_headers[$name] = $value;
+        $this->http_headers[$name] = $value;
     }
 }

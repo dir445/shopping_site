@@ -9,11 +9,11 @@ abstract class DbRepository {
 
     public function setConnection($con)
     {
-        $this->$con = $con;
+        $this->con = $con;
     }
 
     public function execute($sql,$params = []){
-        $stmt = $this->$con->prepare($sql);
+        $stmt = $this->con->prepare($sql);
         $stmt->execute($params);
 
         return $stmt;
