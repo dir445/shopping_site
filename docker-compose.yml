@@ -27,9 +27,10 @@ services:
   php-apache:
     build: ./php
     volumes:
-      #- ./htdocs:/var/www/html
       - ./application/web:/var/www/html
       - ./application:/var/www
+      - ./000-default.conf:/etc/apache2/sites-available/000-default.conf
+
     restart: always
     ports:
       - "80:80"
