@@ -9,8 +9,8 @@
         print '<br />';
     }
     ?>
-    <input type="submit" name="disp" value="参照">
-    <input type="submit" name="add" value="追加">
-    <input type="submit" name="edit" value="編集">
-    <input type="submit" name="delete" value="削除">
+    <input type="submit" name="disp" value="参照" formaction="staff/disp">
+    <input type="submit" name="add" value="追加" formaction="staff/add">
+    <input type="submit" name="edit" value="編集" formaction="staff/edit">
+    <input type="submit" name="delete" value="削除" formaction="staff/delete">
 </form>
