@@ -1,5 +1,7 @@
 <?php $this->setLayoutVar('title', 'スタッフ追加') ?>
 
+<?php echo $this->render('login_header'); ?>
+
 スタッフ追加 <br />
 <form method="post" action="/staff/add_check">
     スタッフ名<br />

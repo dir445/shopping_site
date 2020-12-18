@@ -1,6 +1,7 @@
 <?php
 
 class ShopApplication extends Application {
+    protected $login_action = ['staff','login'];
 
     function configure(){        
         $this->db_manager->connect('master', [
@@ -10,6 +11,12 @@ class ShopApplication extends Application {
         ]);
     }
 
+    function initialize() {
+        parent::initialize();
+        header('Expires:-1');
+        header('Cache-Control:');
+        header('Pragma:');        
+    }
 
     function getRootDir() {
         return dirname(__FILE__);
@@ -23,18 +30,6 @@ class ShopApplication extends Application {
                 => ['controller' => 'staff', 'action' => 'list'],
                 '/staff/:action'
                 => ['controller' => 'staff']
-                // ,
-
-                // '/staff/disp'
-                // => ['controller' => 'staff', 'action' => 'disp'],
-                // '/staff/add'
-                // => ['controller' => 'staff', 'action' => 'add'],
-                // '/staff/add_check'
-                // => ['controller' => 'staff', 'action' => 'add_check'],
-                // '/staff/add_done'
-                // => ['controller' => 'staff', 'action' => 'add_done'],
-                // '/staff/edit'
-                // => ['controller' => 'staff', 'action' => 'edit'] 
         ];
     }
 }
