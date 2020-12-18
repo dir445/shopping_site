@@ -29,7 +29,11 @@ class ShopApplication extends Application {
                 '/staff'
                 => ['controller' => 'staff', 'action' => 'list'],
                 '/staff/:action'
-                => ['controller' => 'staff']
+                => ['controller' => 'staff'],
+                '/product'
+                => ['controller' => 'product', 'action' =>'list'],
+                '/product/:action'
+                => ['controller' => 'product']
         ];
     }
 }
