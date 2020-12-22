@@ -6,7 +6,14 @@ class StaffController extends Controller {
 
     public function listAction() {
         $staffs = $this->db_manager->get('Staff')->getAll();
-        return $this->render(['staffs'=> $staffs]);              
+
+        return $this->render([
+            'item_name' => 'スタッフ',
+            'controller' => 'staff',
+            'items' => $staffs,
+            'attributes' => ['コード' => 'code','名前' => 'name'],
+            'code_key' => 'code'],
+            '../list');            
     }
 
     public function dispAction() {

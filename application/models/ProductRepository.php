@@ -1,9 +1,9 @@
 <?php
 
 class ProductRepository extends DbRepository {
-    public function insert($name,$price,$gazou) {
-        $sql = 'INSERT INTO mst_product(name,price,gazou) VALUES(?,?,?)';
-        $params = [$name , $price ,$image];
+    public function insert($name,$price,$image_name) {
+        $sql = 'INSERT INTO mst_product(name,price,image_name) VALUES(?,?,?)';
+        $params = [$name , $price ,$image_name];
         $this->execute($sql,$params);
     }
 
@@ -14,7 +14,7 @@ class ProductRepository extends DbRepository {
     }
 
     public function get($code) {
-        $sql = 'SELECT name,price,gazou FROM mst_product WHERE code=?';
+        $sql = 'SELECT name,price,image_name FROM mst_product WHERE code=?';
         $params = [$code];
         return $this->fetch($sql,$params);
     }
@@ -24,9 +24,9 @@ class ProductRepository extends DbRepository {
         return $this->fetchAll($sql);
     }
 
-    public function update($code,$name,$price,$gazou) {
-        $sql = 'UPDATE mst_product SET name=?,price=?,gazou=? WHERE code=?';
-        $params = [$name,$price,$gazou,$code];
+    public function update($code,$name,$price,$image_name) {
+        $sql = 'UPDATE mst_product SET name=?,price=?,image_name=? WHERE code=?';
+        $params = [$name,$price,$image_name,$code];
         $this->execute($sql,$params);
     }
 }

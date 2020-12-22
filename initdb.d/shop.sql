@@ -11,7 +11,7 @@ CREATE TABLE mst_staff
     password VARCHAR(32)
 );
 
-INSERT INTO mst_staff (name, password) VALUES("Staff1","12345678901234567890123456789012");
+INSERT INTO mst_staff (name, password) VALUES("Staff1","0cc175b9c0f1b6a831c399e269772661");
 INSERT INTO mst_staff (name, password) VALUES("Staff2","12345678901234567890123456789012");
 
 DROP TABLE IF EXISTS mst_product;
@@ -21,10 +21,10 @@ CREATE TABLE mst_product
     code INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
     name VARCHAR(30),
     price int,
-    gazou VARCHAR(30)
+    image_name VARCHAR(30) NOT NULL DEFAULT ''
 );
 
-INSERT INTO mst_product (name, price,gazou) VALUES("商品１",100,"");
+INSERT INTO mst_product (name, price,image_name) VALUES("商品１",100,"");
 
 DROP TABLE IF EXISTS dat_sales;
 

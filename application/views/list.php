@@ -1,3 +1,7 @@
+<?php $this->setLayoutVar('title', $item_name . '一覧');?>
+
+<?php echo $this->render('login_header'); ?>
+
 <?php print $item_name;?>一覧 <br /> 
 
 <?php if(count($items) === 0) :?>
@@ -5,15 +9,15 @@
 <?php else: ?>
     <table>
         <tr>
-            <?php foreach($attributes as $attribute):?>
-                <th><?php print $attribute;?></th>
+            <?php foreach(array_keys($attributes) as $key):?>
+                <th><?php print $key;?></th>
             <?php endforeach;?>    
             <th>操作</th>
         </tr>
         <?php foreach($items as $item):?>
             <tr>
-                <?php foreach(array_keys($attributes) as $key):?>
-                    <td><?php print $this->escape($item[$key]);?></td>
+                <?php foreach($attributes as $attribute):?>
+                    <td><?php print $this->escape($item[$attribute]);?></td>
                 <?php endforeach;?>
                 <td>
                     <form method="post">

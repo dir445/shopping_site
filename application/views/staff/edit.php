@@ -9,15 +9,15 @@
 <br />
 <form method="post" action="/staff/edit_check">
     <input type="hidden" name="code" value="<?php print $this->escape($code); ?>">
-    スタッフ名<br />
+    スタッフ名<input type="checkbox" name="changename" value="1" checked><br />
     <input type="text" name="name" style="width:200px" value="<?php print $this->escape($name);?>">
-    <input type="checkbox" name="changename" value="1" checked><br />
-    パスワード<br />
+    <br /><br />
+    パスワード<input type="checkbox" name="changepass" value="1" checked><br />
     <input type="password" name="pass" style="width:100px">
-    <input type="checkbox" name="changepass" value="1" checked><br />
+    <br />
     パスワードをもう一度入力してください<br />
     <input type="password" name="pass2" style="width:100px"><br />
-    <br />
+    <br /><br />
     <input type="button" onclick="history.back()" value="戻る">
     <input type="submit" name="edit_check" value="OK">
 </form>

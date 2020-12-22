@@ -1,8 +1,10 @@
+
 <?php print $item_name;?>情報参照<br />
 <br />
 <?php foreach($attributes as $key => $value) :?>
     <?php print $key;?><br />
-    <?php print $value;?><br />    
+    <?php print $value;?><br />   
+    <br /> 
 <?php endforeach;?>
 <br />
 <form>

@@ -6,7 +6,13 @@ class ProductController extends Controller {
 
     public function listAction() {
         $products = $this->db_manager->get('Product')->getAll();
-        return $this->render(['products'=> $products]);           
+        return $this->render([
+            'item_name' => '商品',
+            'controller' => 'product',
+            'items' => $products,
+            'attributes' => ['名前' => 'name' ,'価格（円）' => 'price'],
+            'code_key' => 'code'],
+            '../list');       
     }
 
     public function dispAction() {
@@ -14,112 +20,152 @@ class ProductController extends Controller {
         $result = $this->db_manager->get('Product')->get($code);
         $name = $result['name'];
         $price = $result['price'];
-        $gazou = $result['gazou'];
+        $image_name = $result['image_name'];
         return $this->render(['code' => $code,
                               'name' => $name,
-                              'price' => $price]);
+                              'price' => $price,
+                              'image_name' => $image_name]);
     }
 
     public function addAction() {
-        return $this->render();
+        return $this->render(['_token' => $this->generateCsrfToken('product/add')]);
     }
 
     public function add_checkAction() {
+        $token = $this->request->getPost('_token');
+        if (!$this->checkCsrfToken('product/add', $token)) {
+            return $this->redirect('/product');
+        }
+
         $name = $this->request->getPost('name');
-        $pass = $this->request->getPost('pass');
-        $pass2 = $this->request->getPost('pass2');
+        $price = $this->request->getPost('price');
+        $image = $_FILES['image'];
 
         $errors = [];
         if($name == '') {
-            $errors[] = 'スタッフ名が入力されていません。';
-        }
-        if($pass == '') {
-            $errors[] = 'パスワードが入力されていません';
-        }
-        if($pass != $pass2) {
-            $errors[] = 'パスワードが一致しません';
+            $errors[] = '商品名が入力されていません。';
         }
 
-        $pass_md5 = md5($pass);
+        if(preg_match('/\A[0-9]+\z/',$price) == 0) {
+            $errors[] = '価格が正しく入力されていません';
+        }
+
+        if( $image['size'] > 0) {
+            if( $image['size'] > 1000000) {
+                $errors[] = '画像が大きすぎます';
+            }
+            else {
+                $tmpName = $image['tmp_name'];
+                $tmpFilePath = './uploads/' . $image['name'];
+                move_uploaded_file($tmpName,$tmpFilePath);
+            }
+        }
 
         return $this->render(['name' => $name,
-                              'pass_md5' => $pass_md5,
+                              'price' => $price,
+                              'image_name' => $image['name'],
                               'errors' => $errors,
-                              '_token' => $this->generateCsrfToken('staff/add_check')]);
+                              '_token' => $this->generateCsrfToken('product/add_check')]);
     }
 
     public function add_doneAction() {
         $token = $this->request->getPost('_token');
-        if (!$this->checkCsrfToken('staff/add_check', $token)) {
-            return $this->redirect('/staff');
+        if (!$this->checkCsrfToken('product/add_check', $token)) {
+            return $this->redirect('/product');
         }
 
         $name = $this->request->getPost('name');
-        $pass = $this->request->getPost('pass');
-        $this->db_manager->get('Staff')->insert($name,$pass);
+        $price = $this->request->getPost('price');
+        $image_name = $this->request->getPost('image_name');
+        $this->db_manager->get('Product')->insert($name,$price,$image_name);
 
         return $this->render(['name'=>$name]);
     }
 
     public function editAction() {
         $code = $this->request->getPost('code');
-        $result = $this->db_manager->get('Staff')->getName($code);
+        $result = $this->db_manager->get('Product')->get($code);
         $name = $result['name'];
-        return $this->render(['code'=>$code,'name'=>$name]);
+        $price = $result['price'];
+        $image_name = $result['image_name'];
+        return $this->render(['code'  => $code,
+                              'name'  => $name,
+                              'price' => $price,
+                              'image_name' => $image_name,
+                              '_token' => $this->generateCsrfToken('product/edit')]);
     }
 
     public function edit_checkAction() {
+        $token = $this->request->getPost('_token');
+        if (!$this->checkCsrfToken('product/edit', $token)) {
+            return $this->redirect('/product');
+        }
+
         $code = $this->request->getPost('code');
         $changeName = $this->request->getPost('changename');
-        $changePass = $this->request->getPost('changepass');
+        $changePrice = $this->request->getPost('changeprice');
+        $changeImage = $this->request->getPost('changeimage');
         $name = $this->request->getPost('name');
-        $pass = $this->request->getPost('pass');
-        $pass2 = $this->request->getPost('pass2');
+        $price = $this->request->getPost('price');
+        $image = $_FILES['image'];
 
         $errors = [];
-        if(!$changeName && !$changePass) {
+        $noChange = !$changeName && !$changePrice && !$changeImage;
+        if($noChange) {
             $errors[] = '変更する項目がチェックされていません。';
         }
         if($changeName && $name=='') {
             $errors[] = 'スタッフ名が入力されていません。';
         }
-        if($changePass) {
-            if($pass == '') {
-                $errors[] = 'パスワードが入力されていません。';
+        if($changePrice) {
+            if(preg_match('/\A[0-9]+\z/',$price) == 0) {
+                $errors[] = '価格が正しく入力されていません';
             }
-            if($pass != $pass2) {
-                $errors[] = 'パスワードが一致しません。>';
+        }
+        if($changeImage) {
+            if( $image['size'] > 1000000) {
+                $errors[] = '画像が大きすぎます';
+            }
+            else {
+                $tmpName = $image['tmp_name'];
+                $tmpFilePath = './uploads/' . $image['name'];
+                move_uploaded_file($tmpName,$tmpFilePath);
             }
         }
 
-        $pass_md5 = md5($pass);
-        if(count($errors) === 0 && (!$changeName || !$changePass)) {
-            $result = $this->db_manager->get('Staff')->get($code);
+        $image_name = $image['name'];
+        if(count($errors) === 0 && !$noChange) {
+            $result = $this->db_manager->get('Product')->get($code);
             if(!$changeName) {
                 $name = $result['name'];
             }
-            if(!$changePass) {
-                $pass_md5 = $result['password'];
+            if(!$changePrice) {
+                $price = $result['price'];
+            }
+            if(!$changeImage) {
+                $image_name = $result['image_name'];
             }
         }
 
         return $this->render(['errors' => $errors,
                               'code' => $code,
                               'name' => $name,
-                              'pass_md5' => $pass_md5,
-                              '_token' => $this->generateCsrfToken('staff/edit_check')]);
+                              'price' => $price,
+                              'image_name' => $image_name,
+                              '_token' => $this->generateCsrfToken('product/edit_check')]);
     }
 
     public function edit_doneAction() {
         $token = $this->request->getPost('_token');
-        if (!$this->checkCsrfToken('staff/edit_check', $token)) {
-            return $this->redirect('/staff');
+        if (!$this->checkCsrfToken('product/edit_check', $token)) {
+            return $this->redirect('/product');
         }
         $code = $this->request->getPost('code');
         $name = $this->request->getPost('name');
-        $pass = $this->request->getPost('pass');
+        $price = $this->request->getPost('price');
+        $image_name = $this->request->getPost('image_name');
 
-        $this->db_manager->get('Staff')->update($code,$name,$pass);
+        $this->db_manager->get('Product')->update($code,$name,$price,$image_name);
 
         return $this->render();
     }
