@@ -1,7 +1,7 @@
 <?php $this->setLayoutVar('title', 'ログイン'); ?>
 
 スタッフログイン<br />
-<form method="post" action="/staff/authenticate">
+<form method="post" action="/account/authenticate">
     <input type="hidden" name="_token" value="<?php print $this->escape($_token);?>">
     <?php if (isset($errors) && count($errors) > 0): ?>
         <?php echo $this->render('errors', array('errors' => $errors)); ?>

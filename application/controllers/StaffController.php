@@ -1,8 +1,8 @@
 <?php
 
 class StaffController extends Controller {
-    protected $auth_actions = ['list', 'disp', 'add' , 'add_check' , 'add_done' ,
-                               'edit' , 'edit_check' , 'edit_done' , 'delete' , 'delete_done'];
+    protected $auth_actions = ['list', 'disp', 'add' , 'add_done' ,
+                               'edit' , 'edit_done' , 'delete' , 'delete_done'];
 
     public function listAction() {
         $staffs = $this->db_manager->get('Staff')->getAll();
@@ -20,14 +20,23 @@ class StaffController extends Controller {
         $code = $this->request->getPost('code');
         $result = $this->db_manager->get('Staff')->get($code);
         $name = $result['name'];
-        return $this->render(['code'=>$code,'name'=>$name]);
+        return $this->render([
+            'code'=>$code,
+            'name'=>$name]);
     }
 
     public function addAction() {
-        return $this->render();
+        return $this->render([
+            'name' => '',
+            '_token' => $this->generateCsrfToken('staff/add')]);
     }
 
-    public function add_checkAction() {
+    public function add_doneAction() {
+        $token = $this->request->getPost('_token');
+        if (!$this->checkCsrfToken('staff/add', $token)) {
+            return $this->redirect('/staff');
+        }
+
         $name = $this->request->getPost('name');
         $pass = $this->request->getPost('pass');
         $pass2 = $this->request->getPost('pass2');
@@ -43,35 +52,39 @@ class StaffController extends Controller {
             $errors[] = 'パスワードが一致しません';
         }
 
-        $pass_md5 = md5($pass);
-
-        return $this->render(['name' => $name,
-                              'pass_md5' => $pass_md5,
-                              'errors' => $errors,
-                              '_token' => $this->generateCsrfToken('staff/add_check')]);
-    }
-
-    public function add_doneAction() {
-        $token = $this->request->getPost('_token');
-        if (!$this->checkCsrfToken('staff/add_check', $token)) {
-            return $this->redirect('/staff');
+        if(count($errors) != 0) {
+            return $this->render([
+                'name' => '',
+                'errors' => $errors,
+                '_token' => $this->generateCsrfToken('staff/add')],'add');
         }
 
-        $name = $this->request->getPost('name');
-        $pass = $this->request->getPost('pass');
+        $pass_md5 = md5($pass);
         $this->db_manager->get('Staff')->insert($name,$pass);
 
-        return $this->render(['name'=>$name]);
+        return $this->render([
+            'title'=>'スタッフ追加',
+            'msg' => $name . 'さんを追加しました。',
+            'backTo'=>'/staff'
+        ],'../done');
     }
 
     public function editAction() {
         $code = $this->request->getPost('code');
         $result = $this->db_manager->get('Staff')->getName($code);
         $name = $result['name'];
-        return $this->render(['code'=>$code,'name'=>$name]);
+        return $this->render([
+            'code'=>$code,
+            'name'=>$name,
+            '_token' => $this->generateCsrfToken('staff/edit')]);
     }
 
-    public function edit_checkAction() {
+    public function edit_doneAction() {
+        $token = $this->request->getPost('_token');
+        if (!$this->checkCsrfToken('staff/edit', $token)) {
+            return $this->redirect('/staff');
+        }
+
         $code = $this->request->getPost('code');
         $changeName = $this->request->getPost('changename');
         $changePass = $this->request->getPost('changepass');
@@ -95,9 +108,19 @@ class StaffController extends Controller {
             }
         }
 
+        if(count($errors) != 0) {
+            return $this->render([
+                'code'   => $code,
+                'name'   => $name,
+                'errors' => $errors,
+                '_token' => $this->generateCsrfToken('staff/edit')],'edit');
+        }
+
         $pass_md5 = md5($pass);
-        if(count($errors) === 0 && (!$changeName || !$changePass)) {
-            $result = $this->db_manager->get('Staff')->get($code);
+ 
+        $repository = $this->db_manager->get('Staff');       
+        if(!$changeName || !$changePass) {
+            $result = $repository->get($code);
             if(!$changeName) {
                 $name = $result['name'];
             }
@@ -106,25 +129,13 @@ class StaffController extends Controller {
             }
         }
 
-        return $this->render(['errors' => $errors,
-                              'code' => $code,
-                              'name' => $name,
-                              'pass_md5' => $pass_md5,
-                              '_token' => $this->generateCsrfToken('staff/edit_check')]);
-    }
+        $repository->update($code,$name,$pass_md5);
 
-    public function edit_doneAction() {
-        $token = $this->request->getPost('_token');
-        if (!$this->checkCsrfToken('staff/edit_check', $token)) {
-            return $this->redirect('/staff');
-        }
-        $code = $this->request->getPost('code');
-        $name = $this->request->getPost('name');
-        $pass = $this->request->getPost('pass');
-
-        $this->db_manager->get('Staff')->update($code,$name,$pass);
-
-        return $this->render();
+        return $this->render([
+            'title'=>'スタッフ修正',
+            'msg' => '修正しました。',
+            'backTo'=>'/staff'
+        ],'../done');
     }
 
     public function deleteAction() {
@@ -143,59 +154,11 @@ class StaffController extends Controller {
         }
         $code = $this->request->getPost('code');
         $this->db_manager->get('Staff')->delete($code);
-        return $this->render();
-    }
 
-    public function loginAction() {
-        if ($this->session->isAuthenticated()) {
-            return $this->redirect('/staff');
-        }
         return $this->render([
-            'code' => '',
-            'pass' => '',
-            '_token' => $this->generateCsrfToken('staff/login')]);
-    }
-
-    public function authenticateAction() {
-        if ($this->session->isAuthenticated()) {
-            return $this->redirect('/staff');
-        }
-
-        if (!$this->request->isPost()) {
-            $this->forward404();
-        }
-
-        $token = $this->request->getPost('_token');
-        if (!$this->checkCsrfToken('staff/login', $token)) {
-            return $this->redirect('/staff/login');
-        }
-        
-        $code = $this->request->getPost('code');
-        $pass = $this->request->getPost('pass');
-        
-        $errors = [];
-        $result = $this->db_manager->get('Staff')->get($code);
-        if(!$result || $result['password'] !== md5($pass)) {
-            $errors[] = 'スタッフコードかパスワードが間違っています。';
-            return $this->render([
-                'code' => $code,
-                'pass' => $pass,
-                'errors' => $errors,
-                '_token' => $this->generateCsrfToken('staff/login')
-            ], 'login');
-        }
-
-        $this->session->setAuthenticated(true);
-        $this->session->set('login' , 1);
-        $this->session->set('staff_code' , $code);
-        $this->session->set('staff_name' , $result['name']);
-        return $this->redirect('/');
-    }
-
-    public function logoutAction() {
-        $this->session->clear();
-        $this->session->setAuthenticated(false);
-
-        return $this->redirect('/staff/login');
+            'title'=>'スタッフ削除',
+            'msg' => '削除しました。',
+            'backTo'=>'/staff'
+        ],'../done');
     }
 }

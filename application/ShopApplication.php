@@ -1,7 +1,7 @@
 <?php
 
 class ShopApplication extends Application {
-    protected $login_action = ['staff','login'];
+    protected $login_action = ['account','login'];
 
     function configure(){        
         $this->db_manager->connect('master', [
@@ -25,12 +25,18 @@ class ShopApplication extends Application {
     function registerRoutes() {
         return [
                 '/'
-                => ['controller' => 'staff', 'action' => 'list'],
+                => ['controller' => 'account', 'action' => 'top'],
+                '/account/:action'
+                => ['controller' => 'account'],
                 '/staff'
+                => ['controller' => 'staff', 'action' => 'list'],
+                '/staff/'
                 => ['controller' => 'staff', 'action' => 'list'],
                 '/staff/:action'
                 => ['controller' => 'staff'],
                 '/product'
+                => ['controller' => 'product', 'action' =>'list'],
+                '/product/'
                 => ['controller' => 'product', 'action' =>'list'],
                 '/product/:action'
                 => ['controller' => 'product']

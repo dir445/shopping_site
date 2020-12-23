@@ -24,6 +24,17 @@ class ProductRepository extends DbRepository {
         return $this->fetchAll($sql);
     }
 
+    public function isImageUsed($image_name) {
+        $sql = 'SELECT image_name FROM mst_product WHERE 1';
+        $result = $this->fetchAll($sql);
+        foreach( $result as $rec ) {
+            if($image_name == $rec['image_name']) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public function update($code,$name,$price,$image_name) {
         $sql = 'UPDATE mst_product SET name=?,price=?,image_name=? WHERE code=?';
         $params = [$name,$price,$image_name,$code];
