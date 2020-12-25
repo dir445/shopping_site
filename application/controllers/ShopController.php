@@ -40,7 +40,37 @@ class ShopController extends Controller {
     public function cartAction() {
         $cart = $this->session->get('cart' , []);
 
-        $products = []
+        $products = $this->getCartProducts($cart);
+        return $this->render(['products' => $products]);
+    }
+
+    public function updateAction() {
+        $cart = $this->session->get('cart' , []);
+        $errors = [];
+        foreach($cart as $code => $count) {
+            if(!is_null($this->request->getPost('delete' . $code))) {
+                unset($cart[$code]);
+                continue;
+            }
+            $new_count = $this->request->getPost('count' . $code, $count);
+            if(preg_match("/\A[0-9]+\z/",$new_count) == 0 || $new_count < 0) {
+                $errors[] = '数量に誤りがあります。';
+                continue;
+            }
+            if($new_count == 0) {
+                unset($cart[$code]);
+                continue;
+            }
+            $cart[$code] = $new_count;
+        }
+        $this->session->set('cart' , $cart);
+        $products = $this->getCartProducts($cart);
+        return $this->render(['products' => $products,
+                              'errors' => $errors],'cart');
+    }
+
+    function getCartProducts($cart) {
+        $products = [];
         foreach($cart as $code => $count) {
             $product = $this->db_manager->get('Product')->get($code);
             $products[] = [
@@ -51,5 +81,6 @@ class ShopController extends Controller {
                 'image_name' => $product['image_name']
             ];
         }
+        return $products;
     }
 }
